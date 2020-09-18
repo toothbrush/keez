@@ -858,7 +858,6 @@ dependencies = [
  "envy-store",
  "rusoto_core 0.45.0",
  "rusoto_ssm 0.45.0",
- "serde",
  "structopt",
  "tokio 0.1.22",
 ]
