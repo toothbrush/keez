@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use std::collections::HashMap;
 use std::path::PathBuf;
 use structopt::StructOpt;
 use tokio::runtime::Runtime;
@@ -29,13 +29,6 @@ enum Git {
     },
 }
 
-#[derive(Deserialize, Debug)]
-struct Config {
-    foo: String,
-    bar: Vec<String>,
-    zar: u32,
-}
-
 fn main() {
     let matches = Git::from_args();
     println!("{:?}", matches);
@@ -46,6 +39,6 @@ fn main() {
     }
 
     let mut rt = Runtime::new().expect("failed to initialize runtime");
-    let conf = envy_store::from_path::<Config, _>("/demo");
+    let conf = envy_store::from_path::<HashMap<String, String>, _>("/demo");
     println!("config {:#?}", rt.block_on(conf))
 }
