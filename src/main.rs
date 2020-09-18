@@ -4,39 +4,43 @@ use structopt::StructOpt;
 use tokio::runtime::Runtime;
 
 #[derive(Debug, StructOpt)]
-#[structopt(about = "the well-known content tracker")]
-enum Git {
-    Add {
-        #[structopt(short)]
-        interactive: bool,
-        #[structopt(short)]
-        patch: bool,
-        #[structopt(parse(from_os_str))]
-        files: Vec<PathBuf>,
+#[structopt(about = "simple manipulation of AWS SSM Parameter Store values")]
+struct Keez {
+    // Define our global flags here.
+    #[structopt(short = "n", long)]
+    dry_run: bool,
+    #[structopt(subcommand)]
+    cmd: KeezCommand,
+}
+
+#[derive(Debug, StructOpt)]
+enum KeezCommand {
+    Copy {
+        source: String,
+        destination: String,
     },
-    Fetch {
-        #[structopt(long)]
-        dry_run: bool,
-        #[structopt(long)]
-        all: bool,
-        repository: Option<String>,
+    Create {},
+    Edit {
+        prefix: String,
     },
-    Commit {
-        #[structopt(short)]
-        message: Option<String>,
-        #[structopt(short)]
-        all: bool,
+    Export {
+        source: String,
+        #[structopt(long, parse(from_os_str))]
+        export_filename: PathBuf,
+        #[structopt(short = "I", long)]
+        insecure_output: bool,
+    },
+    Import {
+        #[structopt(long, parse(from_os_str))]
+        import_filename: PathBuf,
+        #[structopt(short, long)]
+        edit: bool,
     },
 }
 
 fn main() {
-    let matches = Git::from_args();
-    println!("{:?}", matches);
-    match matches {
-        Git::Add { .. } => {}
-        Git::Fetch { .. } => {}
-        Git::Commit { .. } => {}
-    }
+    let args = Keez::from_args();
+    println!("{:?}", args);
 
     let mut rt = Runtime::new().expect("failed to initialize runtime");
     let conf = envy_store::from_path::<HashMap<String, String>, _>("/demo");
