@@ -1,11 +1,11 @@
-use std::collections::HashMap;
 use std::path::PathBuf;
 use structopt::StructOpt;
-use tokio::runtime::Runtime;
+
+mod cli;
 
 #[derive(Debug, StructOpt)]
 #[structopt(about = "simple manipulation of AWS SSM Parameter Store values")]
-struct Keez {
+pub struct Keez {
     // Define our global flags here.
     #[structopt(short = "n", long)]
     /// Avoid any write operations on the Parameter Store.
@@ -63,7 +63,12 @@ fn main() {
         println!("{:?}", args);
     }
 
-    let mut rt = Runtime::new().expect("failed to initialize runtime");
-    let conf = envy_store::from_path::<HashMap<String, String>, _>("/demo");
-    println!("config {:#?}", rt.block_on(conf))
+    match args.cmd {
+        KeezCommand::Export { .. } => {
+            cli::cmd_export::cmd_export::run(args);
+        }
+        _ => {
+            println!("Command not yet implemented.");
+        }
+    }
 }
