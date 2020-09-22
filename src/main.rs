@@ -9,9 +9,18 @@ fn main() {
         println!("{:?}", args);
     }
 
-    match *args.get_cmd() {
-        cli::KeezCommand::Export { .. } => {
-            cli::cmd_export::run(args);
+    match &*args.get_cmd() {
+        cli::KeezCommand::Export {
+            export_filename,
+            insecure_output,
+            source,
+        } => {
+            cli::cmd_export::run(
+                args.clone(),
+                export_filename.clone(),
+                insecure_output.clone(),
+                source.clone(),
+            );
         }
         _ => {
             println!("Command not yet implemented.");

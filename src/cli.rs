@@ -3,7 +3,7 @@ pub mod cmd_export;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
+#[derive(Clone, Debug, StructOpt)]
 #[structopt(about = "simple manipulation of AWS SSM Parameter Store values")]
 pub struct Keez {
     // Define our global flags here.
@@ -31,7 +31,7 @@ impl Keez {
     }
 }
 
-#[derive(Debug, StructOpt)]
+#[derive(Clone, Debug, StructOpt)]
 pub enum KeezCommand {
     /// Transplant all parameters under a given prefix to another prefix.
     Copy {
