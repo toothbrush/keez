@@ -10,6 +10,9 @@ struct Keez {
     #[structopt(short = "n", long)]
     /// Avoid any write operations on the Parameter Store.
     dry_run: bool,
+    #[structopt(short = "d", long)]
+    /// Provide extra detailed output.
+    debug: bool,
     #[structopt(subcommand)]
     cmd: KeezCommand,
 }
@@ -56,7 +59,9 @@ enum KeezCommand {
 
 fn main() {
     let args = Keez::from_args();
-    println!("{:?}", args);
+    if args.debug {
+        println!("{:?}", args);
+    }
 
     let mut rt = Runtime::new().expect("failed to initialize runtime");
     let conf = envy_store::from_path::<HashMap<String, String>, _>("/demo");
