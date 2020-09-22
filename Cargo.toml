@@ -10,8 +10,6 @@ edition = "2018"
 rusoto_core = "0.45.0"
 rusoto_ssm = "0.45.0"
 structopt = "0.3.17"
-envy-store = "0.1.0"
-tokio = "0.1"
 
 [patch.crates-io]
 pkg-config = { git = "https://github.com/Litarvan/pkg-config-rs" }
