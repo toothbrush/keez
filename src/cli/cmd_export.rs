@@ -7,5 +7,6 @@ pub fn run(
     _insecure_output: bool,
     source: String,
 ) {
-    aws::parameter_store::get_parameters_by_path(source);
+    let ps = aws::parameter_store::get_parameters_by_path(source);
+    println!("{:?}", ps);
 }
