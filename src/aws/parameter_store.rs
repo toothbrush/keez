@@ -19,7 +19,7 @@ pub struct Parameters {
 impl Parameters {
     pub fn new(prefix: String) -> Parameters {
         return Parameters {
-            prefix: String::from(prefix),
+            prefix,
             ps: HashMap::new(),
         };
     }
