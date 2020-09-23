@@ -1,4 +1,7 @@
+use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
 use std::collections::HashMap;
+use std::error;
+use tokio::runtime;
 
 #[derive(Debug)]
 pub struct Parameter {
@@ -27,10 +30,27 @@ pub fn get_parameters_by_path(path_prefix: String) -> Parameters {
     return Parameters::new(path_prefix.clone());
 }
 
-fn raw_parameters_by_path(path_prefix: String) -> Vec<rusoto_ssm::Parameter> {
-    let mut vec = Vec::new();
-
+fn raw_parameters_by_path(
+    path_prefix: String,
+) -> Result<Vec<rusoto_ssm::Parameter>, Box<dyn error::Error>> {
     println!("in raw_parameters_by_path...");
 
-    return vec;
+    let mut rt = runtime::Builder::new()
+        .threaded_scheduler()
+        .enable_all()
+        .build()
+        .unwrap();
+
+    let client = SsmClient::new(Default::default());
+    let res = rt.block_on(client.get_parameters_by_path(GetParametersByPathRequest {
+        path: path_prefix.clone(),
+        with_decryption: Some(true),
+        recursive: Some(true),
+        ..GetParametersByPathRequest::default()
+    }));
+
+    println!("{:?}", res);
+    let mut vec = Vec::new();
+
+    return Ok(vec);
 }
