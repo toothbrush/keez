@@ -8,6 +8,7 @@ edition = "2018"
 rusoto_core = "0.45.0"
 rusoto_ssm = "0.45.0"
 structopt = "0.3.17"
+tokio = { version = "0.2", features = ["blocking", "rt-threaded"] }
 
 [patch.crates-io]
 pkg-config = { git = "https://github.com/Litarvan/pkg-config-rs" }
