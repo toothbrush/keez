@@ -33,6 +33,10 @@ impl ParameterCollection {
             params: HashMap::new(),
         };
     }
+
+    pub fn get_params(&self) -> &HashMap<String, Parameter> {
+        &self.params
+    }
 }
 
 pub fn get_parameters_by_path(
