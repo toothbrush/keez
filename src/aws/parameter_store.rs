@@ -16,6 +16,16 @@ pub struct Parameters {
     ps: HashMap<String, Parameter>,
 }
 
+impl Parameter {
+    pub fn new(parameter_value: String, parameter_type: String) -> Parameter {
+        return Parameter {
+            parameter_value,
+            parameter_type,
+            modified: false,
+        };
+    }
+}
+
 impl Parameters {
     pub fn new(prefix: String) -> Parameters {
         return Parameters {
@@ -25,10 +35,21 @@ impl Parameters {
     }
 }
 
-pub fn get_parameters_by_path(path_prefix: String) -> Parameters {
-    let raw_parameters = raw_parameters_by_path(path_prefix.clone());
-    let result = Parameters::new(path_prefix.clone());
-    return result;
+pub fn get_parameters_by_path(path_prefix: String) -> Result<Parameters, Box<dyn error::Error>> {
+    let raw_parameters = raw_parameters_by_path(path_prefix.clone())?;
+    let mut result = Parameters::new(path_prefix.clone());
+
+    for raw_param in &raw_parameters {
+        result.ps.insert(
+            raw_param.name.clone().unwrap(), // TODO clone or borrow??
+            Parameter::new(
+                raw_param.value.clone().unwrap_or_default(),
+                raw_param.type_.clone().unwrap_or_default(),
+            ),
+        );
+    }
+
+    return Ok(result);
 }
 
 fn raw_parameters_by_path(
