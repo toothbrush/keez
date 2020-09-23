@@ -8,5 +8,15 @@ pub fn run(
     source: String,
 ) {
     let ps = aws::parameter_store::get_parameters_by_path(source);
-    println!("{:?}", ps);
+
+    let debug = true; //TODO proper settings
+    if debug {
+        println!("Raw output from Parameter Store:");
+        println!("{:?}", ps);
+    }
+
+    println!(
+        "Returned {:?} parameters from store.",
+        ps.unwrap().get_params().len()
+    );
 }
