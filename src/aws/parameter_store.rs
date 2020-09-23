@@ -69,7 +69,11 @@ fn raw_parameters_by_path(
         }
     }
 
-    println!("{:?}", params);
+    let debug = true; // TODO filter down from --debug structopt
+    if debug {
+        println!("raw_parameters_by_path: received from API:");
+        println!("{:?}", params);
+    }
 
     return Ok(params);
 }
