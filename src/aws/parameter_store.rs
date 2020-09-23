@@ -11,9 +11,9 @@ pub struct Parameter {
 }
 
 #[derive(Debug)]
-pub struct Parameters {
+pub struct ParameterCollection {
     prefix: String,
-    ps: HashMap<String, Parameter>,
+    params: HashMap<String, Parameter>,
 }
 
 impl Parameter {
@@ -26,21 +26,23 @@ impl Parameter {
     }
 }
 
-impl Parameters {
-    pub fn new(prefix: String) -> Parameters {
-        return Parameters {
+impl ParameterCollection {
+    pub fn new(prefix: String) -> ParameterCollection {
+        return ParameterCollection {
             prefix,
-            ps: HashMap::new(),
+            params: HashMap::new(),
         };
     }
 }
 
-pub fn get_parameters_by_path(path_prefix: String) -> Result<Parameters, Box<dyn error::Error>> {
+pub fn get_parameters_by_path(
+    path_prefix: String,
+) -> Result<ParameterCollection, Box<dyn error::Error>> {
     let raw_parameters = raw_parameters_by_path(path_prefix.clone())?;
-    let mut result = Parameters::new(path_prefix.clone());
+    let mut result = ParameterCollection::new(path_prefix.clone());
 
     for raw_param in &raw_parameters {
-        result.ps.insert(
+        result.params.insert(
             raw_param.name.clone().unwrap(), // TODO clone or borrow??
             Parameter::new(
                 raw_param.value.clone().unwrap_or_default(),
