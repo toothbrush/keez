@@ -4,7 +4,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use regex::Regex;
-use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
+use rusoto_ssm::{GetParametersByPathRequest, PutParameterRequest, Ssm, SsmClient};
 use serde::{Deserialize, Serialize};
 use tokio::runtime;
 
@@ -201,7 +201,73 @@ pub fn migrate_parameters(
     destination: String,
     write_mode: bool,
 ) -> Result<(), Box<dyn error::Error>> {
-    check_path(destination)?;
+    check_path(destination.clone())?;
 
+    // Build a regex with the old parameter path prefix which we wish
+    // to replace.
+
+    let mut new_params: Vec<rusoto_ssm::Parameter> = Vec::new();
+    let mut new_key: String;
+
+    for (key, param) in source.get_parameters() {
+        // It's okay to panic here, because things are weird if the
+        // search prefix doesn't match all the keys in a blob.
+        let mut new_key_parts = Vec::new();
+        new_key_parts.push(destination.clone());
+        new_key_parts.push(
+            key.clone()
+                .strip_prefix(source.get_path_prefix())
+                .unwrap()
+                .to_string(),
+        );
+        new_key = new_key_parts.join("");
+        new_params.push(rusoto_ssm::Parameter {
+            data_type: Some("text".to_string()),
+            name: Some(new_key),
+            type_: Some(param.parameter_type.to_string()),
+            value: Some(param.parameter_value.clone()),
+            arn: None,
+            last_modified_date: None,
+            selector: None,
+            source_result: None,
+            version: None,
+        });
+    }
+
+    push_new_parameters(new_params, write_mode)
+}
+
+fn push_new_parameters(
+    parameters: Vec<rusoto_ssm::Parameter>,
+    write_mode: bool,
+) -> Result<(), Box<dyn error::Error>> {
+    let mut rt = runtime::Builder::new()
+        .threaded_scheduler()
+        .enable_all()
+        .build()
+        .unwrap();
+
+    let client = SsmClient::new(Default::default());
+
+    let mut req: PutParameterRequest;
+
+    for param in parameters {
+        if write_mode {
+            let current_key = param.name.clone().unwrap();
+            eprintln!("Creating key {}...", current_key);
+            req = PutParameterRequest {
+                data_type: Some("text".to_string()),
+                name: current_key,
+                type_: param.type_,
+                value: param.value.unwrap(),
+                overwrite: Some(false),
+                ..PutParameterRequest::default()
+            };
+
+            rt.block_on(client.put_parameter(req.clone()))?;
+        } else {
+            eprintln!("[DRY-RUN] Would create key {}...", param.name.unwrap());
+        }
+    }
     Ok(())
 }
