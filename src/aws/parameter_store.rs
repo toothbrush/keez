@@ -136,8 +136,7 @@ fn raw_parameters_by_path(
     let mut rt = runtime::Builder::new()
         .threaded_scheduler()
         .enable_all()
-        .build()
-        .unwrap();
+        .build()?;
 
     let client = SsmClient::new(Default::default());
 
@@ -244,8 +243,7 @@ fn push_new_parameters(
     let mut rt = runtime::Builder::new()
         .threaded_scheduler()
         .enable_all()
-        .build()
-        .unwrap();
+        .build()?;
 
     let client = SsmClient::new(Default::default());
 
