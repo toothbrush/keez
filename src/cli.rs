@@ -31,6 +31,7 @@ impl Keez {
     }
 }
 
+// TODO add long-form example usage text to subcommands.
 #[derive(Clone, Debug, StructOpt)]
 pub enum KeezCommand {
     /// Transplant all parameters under a given prefix to another prefix.
