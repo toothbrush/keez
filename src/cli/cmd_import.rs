@@ -47,6 +47,6 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
     println!("\nWe'll rewrite the path prefix:");
     println!("  {} => {}\n", deserialized.get_path_prefix(), destination);
 
-    let write_mode = true; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
+    let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
     aws::parameter_store::migrate_parameters(deserialized, destination, write_mode).unwrap();
 }

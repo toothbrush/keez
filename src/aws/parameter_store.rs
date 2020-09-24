@@ -262,6 +262,8 @@ fn push_new_parameters(
                 ..PutParameterRequest::default()
             };
 
+            // TODO catch specific ParameterAlreadyExists error,
+            // because that's a user's fault.
             rt.block_on(client.put_parameter(req.clone()))?;
         } else {
             eprintln!("[DRY-RUN] Would create key {}...", param.name.unwrap());
