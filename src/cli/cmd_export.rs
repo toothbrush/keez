@@ -33,4 +33,10 @@ pub fn run(
     if args.debug {
         println!("Found symmetric key = {:?}", key);
     }
+
+    let encrypted_form = secrets::symmetric_store::encrypt(yaml_blob).unwrap();
+
+    if args.debug {
+        println!("encrypted_form = {:?}", encrypted_form);
+    }
 }
