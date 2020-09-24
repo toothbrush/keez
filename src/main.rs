@@ -35,6 +35,9 @@ fn main() {
                 edit.clone(),
             );
         }
+        cli::KeezCommand::Edit { prefix } => {
+            cli::cmd_edit::run(args.clone(), prefix.clone());
+        }
         _ => {
             println!("Command not yet implemented.");
         }
