@@ -1,10 +1,16 @@
+use std::env;
+use std::fs;
+use std::io::prelude::*;
+use std::io::BufWriter;
+use std::path::Path;
+
 use crate::aws;
 use crate::cli;
 use crate::secrets;
 
 pub fn run(
     args: cli::Keez,
-    _export_filename: std::path::PathBuf,
+    export_filename: std::path::PathBuf,
     insecure_output: bool,
     source: String,
 ) {
@@ -35,4 +41,31 @@ pub fn run(
 
     let encrypted_form = secrets::symmetric_store::encrypt(yaml_blob).unwrap();
 
+    // Create a path to the desired file
+    let path = Path::new(&export_filename);
+    let absolute_path = if path.is_absolute() {
+        path.to_path_buf()
+    } else {
+        env::current_dir().unwrap().join(path)
+    };
+
+    print!(
+        "Writing exported parameters to {}... ",
+        absolute_path.display()
+    );
+
+    // Open file rw and create if necessary.  We'll overwrite any
+    // existing file at the given path.
+    let file = fs::OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open(absolute_path);
+
+    let mut buffer = BufWriter::new(file.unwrap());
+
+    buffer.write_all(&encrypted_form).unwrap();
+    buffer.flush().unwrap();
+
+    println!("done.");
 }
