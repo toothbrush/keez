@@ -4,16 +4,20 @@ use std::fmt;
 use std::str::FromStr;
 
 use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
+use serde::{Deserialize, Serialize};
 use tokio::runtime;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Parameter {
+    #[serde(rename = "value")]
     parameter_value: String,
+    #[serde(rename = "type")]
     parameter_type: ParameterType,
+    #[serde(skip)]
     modified: bool,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum ParameterType {
     String,
     SecureString,
@@ -68,7 +72,7 @@ impl FromStr for ParameterType {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ParameterCollection {
     prefix: String,
     params: HashMap<String, Parameter>,
