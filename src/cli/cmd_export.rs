@@ -18,7 +18,7 @@ pub fn run(
     let unwrapped_parameterblob = ps.unwrap();
 
     println!(
-        "Returned {:?} parameters from store.",
+        "Returned {} parameters from store.",
         unwrapped_parameterblob.get_params().len()
     );
 
@@ -28,9 +28,8 @@ pub fn run(
         println!("{}", yaml_blob);
     }
 
-    let key = secrets::keychain_access::get_symmetric_key();
-
     if args.debug {
+        let key = secrets::keychain_access::get_symmetric_key();
         println!("Found symmetric key = {:?}", key);
     }
 
