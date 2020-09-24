@@ -54,18 +54,9 @@ pub fn run(
         absolute_path.display()
     );
 
-    // Open file rw and create if necessary.  We'll overwrite any
+    // Open file and create if necessary.  We'll overwrite any
     // existing file at the given path.
-    let file = fs::OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .open(absolute_path);
-
-    let mut buffer = BufWriter::new(file.unwrap());
-
-    buffer.write_all(&encrypted_form).unwrap();
-    buffer.flush().unwrap();
+    fs::write(&absolute_path, &encrypted_form).unwrap();
 
     println!("done.");
 }
