@@ -2,6 +2,7 @@ use structopt::StructOpt;
 
 mod aws;
 mod cli;
+mod secrets;
 
 fn main() {
     let args = cli::Keez::from_args();

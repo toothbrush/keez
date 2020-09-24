@@ -1,5 +1,6 @@
 use crate::aws;
 use crate::cli;
+use crate::secrets;
 
 pub fn run(
     args: cli::Keez,
@@ -25,5 +26,11 @@ pub fn run(
 
     if insecure_output {
         println!("{}", s);
+    }
+
+    let key = secrets::keychain_access::get_symmetric_key();
+
+    if args.debug {
+        println!("Found symmetric key = {:?}", key);
     }
 }
