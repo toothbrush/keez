@@ -23,6 +23,18 @@ fn main() {
                 source.clone(),
             );
         }
+        cli::KeezCommand::Import {
+            import_filename,
+            destination,
+            edit,
+        } => {
+            cli::cmd_import::run(
+                args.clone(),
+                import_filename.clone(),
+                destination.clone(),
+                edit.clone(),
+            );
+        }
         _ => {
             println!("Command not yet implemented.");
         }

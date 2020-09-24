@@ -1,4 +1,5 @@
 pub mod cmd_export;
+pub mod cmd_import;
 
 use std::path::PathBuf;
 use structopt::StructOpt;
@@ -68,6 +69,6 @@ pub enum KeezCommand {
         import_filename: PathBuf,
         #[structopt(short, long)]
         /// Whether to interactively edit values prior to importing.
-        edit: bool,
+        edit: bool, // TODO implement interactive edit pre-upload.
     },
 }
