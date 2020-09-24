@@ -1,8 +1,9 @@
-use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
 use std::collections::HashMap;
 use std::error;
 use std::fmt;
 use std::str::FromStr;
+
+use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
 use tokio::runtime;
 
 #[derive(Debug)]
