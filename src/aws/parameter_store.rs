@@ -3,6 +3,7 @@ use std::error;
 use std::fmt;
 use std::str::FromStr;
 
+use regex::Regex;
 use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
 use serde::{Deserialize, Serialize};
 use tokio::runtime;
@@ -30,6 +31,10 @@ pub enum ParameterError {
         /// Contains the malformed input for debugging purposes
         String,
     ),
+    InvalidPathPrefix(
+        /// Contains a more detailed error description
+        String,
+    ),
 }
 
 // TODO i'm sure this can be made less ugly.
@@ -53,6 +58,7 @@ impl fmt::Display for ParameterError {
             ParameterError::InvalidParameterType(input) => {
                 write!(f, "invalid AWS Parameter Store parameter type: {:?}", input)
             }
+            ParameterError::InvalidPathPrefix(desc) => write!(f, "invalid path prefix: {}", desc),
         }
     }
 }
@@ -98,6 +104,10 @@ impl ParameterCollection {
 
     pub fn get_params(&self) -> &HashMap<String, Parameter> {
         &self.params
+    }
+
+    pub fn get_path_prefix(&self) -> &String {
+        &self.prefix
     }
 }
 
@@ -165,4 +175,30 @@ fn raw_parameters_by_path(
     }
 
     return Ok(params);
+}
+
+fn check_path(parameter_path: String) -> Result<(), Box<dyn error::Error>> {
+    let re = Regex::new(r"^/[a-zA-Z0-9_.-]").unwrap();
+    if !(re.is_match(&parameter_path)) {
+        return Err(ParameterError::InvalidPathPrefix("must begin with slash".to_string()).into());
+    }
+
+    if parameter_path.ends_with("/") {
+        return Err(ParameterError::InvalidPathPrefix(
+            "must not have a trailing slash".to_string(),
+        )
+        .into());
+    }
+
+    Ok(())
+}
+
+pub fn migrate_parameters(
+    source: ParameterCollection,
+    destination: String,
+    write_mode: bool,
+) -> Result<(), Box<dyn error::Error>> {
+    check_path(destination)?;
+
+    Ok(())
 }
