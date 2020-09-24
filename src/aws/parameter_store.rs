@@ -81,7 +81,7 @@ impl FromStr for ParameterType {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ParameterCollection {
     prefix: String,
-    params: HashMap<String, Parameter>,
+    parameters: HashMap<String, Parameter>,
 }
 
 impl Parameter {
@@ -98,12 +98,12 @@ impl ParameterCollection {
     pub fn new(prefix: String) -> ParameterCollection {
         return ParameterCollection {
             prefix,
-            params: HashMap::new(),
+            parameters: HashMap::new(),
         };
     }
 
-    pub fn get_params(&self) -> &HashMap<String, Parameter> {
-        &self.params
+    pub fn get_parameters(&self) -> &HashMap<String, Parameter> {
+        &self.parameters
     }
 
     pub fn get_path_prefix(&self) -> &String {
@@ -118,7 +118,7 @@ pub fn get_parameters_by_path(
     let mut result = ParameterCollection::new(path_prefix.clone());
 
     for raw_param in &raw_parameters {
-        result.params.insert(
+        result.parameters.insert(
             raw_param.name.clone().unwrap(), // TODO clone or borrow??
             Parameter::new(
                 raw_param.value.clone().unwrap_or_default(),
@@ -153,9 +153,9 @@ fn raw_parameters_by_path(
 
     let mut res = rt.block_on(client.get_parameters_by_path(req.clone()))?;
 
-    let mut params: Vec<rusoto_ssm::Parameter> = Vec::new();
+    let mut parameters: Vec<rusoto_ssm::Parameter> = Vec::new();
     if let Some(new_params) = res.parameters {
-        params.extend(new_params.into_iter());
+        parameters.extend(new_params.into_iter());
     }
 
     // Get next set of parameters if there's a next_token.
@@ -164,17 +164,17 @@ fn raw_parameters_by_path(
         res = rt.block_on(client.get_parameters_by_path(req.clone()))?;
 
         if let Some(new_params) = res.parameters {
-            params.extend(new_params.into_iter());
+            parameters.extend(new_params.into_iter());
         }
     }
 
     let debug = true; // TODO filter down from --debug structopt
     if debug {
         println!("raw_parameters_by_path: received from API:");
-        println!("{:?}", params);
+        println!("{:?}", parameters);
     }
 
-    return Ok(params);
+    return Ok(parameters);
 }
 
 fn check_path(parameter_path: String) -> Result<(), Box<dyn error::Error>> {
@@ -193,6 +193,9 @@ fn check_path(parameter_path: String) -> Result<(), Box<dyn error::Error>> {
     Ok(())
 }
 
+/// migrate_parameters takes an exported set of parameters and target
+/// prefix and pushes all the values in the set, after changing the
+/// source to the target prefix.
 pub fn migrate_parameters(
     source: ParameterCollection,
     destination: String,

@@ -41,7 +41,7 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
     }
 
     println!("Imported blob contains the following keys:");
-    for (key, _param) in deserialized.get_params() {
+    for (key, _param) in deserialized.get_parameters() {
         println!("  - {}", key);
     }
     println!("\nWe'll rewrite the path prefix:");
