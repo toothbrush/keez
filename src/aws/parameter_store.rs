@@ -1,13 +1,70 @@
 use rusoto_ssm::{GetParametersByPathRequest, Ssm, SsmClient};
 use std::collections::HashMap;
 use std::error;
+use std::fmt;
+use std::str::FromStr;
 use tokio::runtime;
 
 #[derive(Debug)]
 pub struct Parameter {
     parameter_value: String,
-    parameter_type: String,
+    parameter_type: ParameterType,
     modified: bool,
+}
+
+#[derive(Debug)]
+pub enum ParameterType {
+    String,
+    SecureString,
+    StringList,
+}
+
+#[derive(Debug)]
+pub enum ParameterError {
+    InvalidParameterType(
+        /// Contains the malformed input for debugging purposes
+        String,
+    ),
+}
+
+// TODO i'm sure this can be made less ugly.
+impl fmt::Display for ParameterType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                ParameterType::String => "String",
+                ParameterType::SecureString => "SecureString",
+                ParameterType::StringList => "StringList",
+            }
+        )
+    }
+}
+
+impl fmt::Display for ParameterError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ParameterError::InvalidParameterType(input) => {
+                write!(f, "invalid AWS Parameter Store parameter type: {:?}", input)
+            }
+        }
+    }
+}
+
+impl error::Error for ParameterError {}
+
+impl FromStr for ParameterType {
+    type Err = ParameterError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "String" => Ok(ParameterType::String),
+            "SecureString" => Ok(ParameterType::SecureString),
+            "StringList" => Ok(ParameterType::StringList),
+            _ => Err(ParameterError::InvalidParameterType(s.to_string()).into()),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -20,7 +77,7 @@ impl Parameter {
     pub fn new(parameter_value: String, parameter_type: String) -> Parameter {
         return Parameter {
             parameter_value,
-            parameter_type,
+            parameter_type: ParameterType::from_str(&parameter_type).unwrap(),
             modified: false,
         };
     }
