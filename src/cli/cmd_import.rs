@@ -23,8 +23,20 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
     // Open file read-only.
     // Read the file contents for decrypting.
     let encrypted_blob: Vec<u8> = fs::read(absolute_path).unwrap();
-    println!("{:?}", encrypted_blob);
 
     let raw_yaml = secrets::symmetric_store::decrypt(encrypted_blob).unwrap();
-    println!("{}", raw_yaml);
+
+    if args.debug {
+        println!("Read YAML from encrypted file:");
+        println!("{}", raw_yaml);
+    }
+
+    // Deserialize it back to a Rust type.
+    let deserialized: aws::parameter_store::ParameterCollection =
+        serde_yaml::from_str(&raw_yaml).unwrap();
+
+    if args.debug {
+        println!("Data structure after deserialization:");
+        println!("{:?}", deserialized);
+    }
 }
