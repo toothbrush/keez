@@ -22,10 +22,10 @@ pub fn run(
         unwrapped_parameterblob.get_params().len()
     );
 
-    let s = serde_yaml::to_string(&unwrapped_parameterblob).unwrap();
+    let yaml_blob = serde_yaml::to_string(&unwrapped_parameterblob).unwrap();
 
     if insecure_output {
-        println!("{}", s);
+        println!("{}", yaml_blob);
     }
 
     let key = secrets::keychain_access::get_symmetric_key();
