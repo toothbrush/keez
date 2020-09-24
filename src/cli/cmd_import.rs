@@ -39,4 +39,14 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
         println!("Data structure after deserialization:");
         println!("{:?}", deserialized);
     }
+
+    println!("Imported blob contains the following keys:");
+    for (key, _param) in deserialized.get_params() {
+        println!("  - {}", key);
+    }
+    println!("\nWe'll rewrite the path prefix:");
+    println!("  {} => {}\n", deserialized.get_path_prefix(), destination);
+
+    let write_mode = true; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
+    aws::parameter_store::migrate_parameters(deserialized, destination, write_mode).unwrap();
 }
