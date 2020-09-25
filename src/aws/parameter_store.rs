@@ -14,8 +14,6 @@ pub struct Parameter {
     parameter_value: String,
     #[serde(rename = "type")]
     parameter_type: ParameterType,
-    #[serde(skip)]
-    modified: bool,
 }
 
 #[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq)]
@@ -91,7 +89,6 @@ impl Parameter {
         return Parameter {
             parameter_value,
             parameter_type: ParameterType::from_str(&parameter_type).unwrap(),
-            modified: false,
         };
     }
 }
@@ -287,8 +284,6 @@ pub fn push_updated_parameters(
     let mut updated_parameters: HashMap<String, Parameter> = HashMap::new();
 
     for (key, new_param) in new_parameters.get_parameters() {
-        println!("checking new parameter {}", key);
-
         match old_parameters.get_parameters().get(key) {
             Some(old_param) => {
                 // alright, the key exists in the old hashmap
@@ -301,7 +296,6 @@ pub fn push_updated_parameters(
                         Parameter {
                             parameter_type: new_param.parameter_type.clone(),
                             parameter_value: new_param.parameter_value.clone(),
-                            modified: true,
                         },
                     );
                 }
