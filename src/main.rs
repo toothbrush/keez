@@ -43,7 +43,7 @@ fn main() {
             source,
             destination,
         } => {
-            eprintln!("Command not yet implemented.");
+            cli::cmd_copy::run(args.clone(), source.clone(), destination.clone());
         }
         cli::KeezCommand::Create {} => {
             cli::cmd_create::run(args.clone());
