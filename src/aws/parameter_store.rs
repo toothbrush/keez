@@ -80,6 +80,7 @@ impl FromStr for ParameterType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ParameterCollection {
+    #[serde(default)]
     prefix: String,
     parameters: HashMap<String, Parameter>,
 }
@@ -331,4 +332,29 @@ pub fn push_updated_parameters(
         }
     }
     Ok(())
+}
+
+pub fn create_parameters(
+    new_parameters: ParameterCollection,
+    write_mode: bool,
+) -> Result<(), Box<dyn error::Error>> {
+    let mut new_params: Vec<rusoto_ssm::Parameter> = Vec::new();
+
+    for (key, param) in new_parameters.get_parameters() {
+        // It's okay to panic here, because things are weird if the
+        // search prefix doesn't match all the keys in a blob.
+        new_params.push(rusoto_ssm::Parameter {
+            data_type: Some("text".to_string()),
+            name: Some(key.clone()),
+            type_: Some(param.parameter_type.to_string()),
+            value: Some(param.parameter_value.clone()),
+            arn: None,
+            last_modified_date: None,
+            selector: None,
+            source_result: None,
+            version: None,
+        });
+    }
+
+    push_new_parameters(new_params, write_mode)
 }

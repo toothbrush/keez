@@ -47,6 +47,7 @@ fn main() {
         }
         cli::KeezCommand::Create {} => {
             println!("Command not yet implemented.");
+            cli::cmd_create::run(args.clone());
         }
     }
 }
