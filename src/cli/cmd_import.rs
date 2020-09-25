@@ -4,9 +4,10 @@ use std::path::Path;
 
 use crate::aws;
 use crate::cli;
+use crate::editor;
 use crate::secrets;
 
-pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: String, _edit: bool) {
+pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: String, edit: bool) {
     // Create a path to the desired file
     let path = Path::new(&import_filename);
     let absolute_path = if path.is_absolute() {
@@ -29,6 +30,14 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
     if args.debug {
         eprintln!("Read YAML from encrypted file:");
         eprintln!("{}", raw_yaml);
+    }
+
+    if edit {
+        // Let the user edit the ...
+        // it's not that simple.  we need to rewrite the paths, first.
+        // raw_yaml = editor::edit_loop::interactive_edit(raw_yaml).unwrap();
+
+        panic!("oh no, the edit-before-import command isn't implemented yet!")
     }
 
     // Deserialize it back to a Rust type.
