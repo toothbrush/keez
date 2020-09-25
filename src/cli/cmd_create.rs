@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::aws;
 use crate::cli;
 use crate::editor;
