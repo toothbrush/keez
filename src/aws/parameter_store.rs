@@ -18,7 +18,7 @@ pub struct Parameter {
     modified: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq)]
 pub enum ParameterType {
     String,
     SecureString,
@@ -35,6 +35,7 @@ pub enum ParameterError {
         /// Contains a more detailed error description
         String,
     ),
+    NonexistentKey(String),
 }
 
 // TODO i'm sure this can be made less ugly.
@@ -59,6 +60,7 @@ impl fmt::Display for ParameterError {
                 write!(f, "invalid AWS Parameter Store parameter type: {:?}", input)
             }
             ParameterError::InvalidPathPrefix(desc) => write!(f, "invalid path prefix: {}", desc),
+            ParameterError::NonexistentKey(desc) => write!(f, "key {} not found in list of parameters.  Use `create` command to add new parameters.", desc),
         }
     }
 }
@@ -267,6 +269,71 @@ fn push_new_parameters(
             rt.block_on(client.put_parameter(req.clone()))?;
         } else {
             eprintln!("[DRY-RUN] Would create key {}...", param.name.unwrap());
+        }
+    }
+    Ok(())
+}
+
+// push_updated_parameters should be called after interactively
+// modifying a set of parameters.  We also want the original
+// parameters so that we can do a comparison.  We don't want the user
+// sneaking in new parameters or making a typo and saving /foo to
+// /fooprime accidentally.
+pub fn push_updated_parameters(
+    old_parameters: ParameterCollection,
+    new_parameters: ParameterCollection,
+    write_mode: bool,
+) -> Result<(), Box<dyn error::Error>> {
+    let mut updated_parameters: HashMap<String, Parameter> = HashMap::new();
+
+    for (key, new_param) in new_parameters.get_parameters() {
+        println!("checking new parameter {}", key);
+
+        match old_parameters.get_parameters().get(key) {
+            Some(old_param) => {
+                // alright, the key exists in the old hashmap
+                if old_param.parameter_type != new_param.parameter_type
+                    || old_param.parameter_value != new_param.parameter_value
+                {
+                    // okay, something has changed.
+                    updated_parameters.insert(
+                        key.clone(),
+                        Parameter {
+                            parameter_type: new_param.parameter_type.clone(),
+                            parameter_value: new_param.parameter_value.clone(),
+                            modified: true,
+                        },
+                    );
+                }
+            }
+            None => return Err(ParameterError::NonexistentKey(key.to_string()).into()),
+        }
+    }
+
+    let mut rt = runtime::Builder::new()
+        .threaded_scheduler()
+        .enable_all()
+        .build()?;
+
+    let client = SsmClient::new(Default::default());
+
+    let mut req: PutParameterRequest;
+
+    for (key, param) in updated_parameters {
+        if write_mode {
+            eprintln!("Updating key {}...", key);
+            req = PutParameterRequest {
+                data_type: Some("text".to_string()),
+                name: key,
+                type_: Some(param.parameter_type.to_string()),
+                value: param.parameter_value,
+                overwrite: Some(true),
+                ..PutParameterRequest::default()
+            };
+
+            rt.block_on(client.put_parameter(req.clone()))?;
+        } else {
+            eprintln!("[DRY-RUN] Would update key {}...", key);
         }
     }
     Ok(())
