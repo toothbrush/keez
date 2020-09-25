@@ -8,14 +8,22 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Clone, Debug, StructOpt)]
-#[structopt(about = "simple manipulation of AWS SSM Parameter Store values")]
+/// simple & interactive manipulation of AWS SSM Parameter Store values
 pub struct Keez {
     // Define our global flags here.
     #[structopt(short = "n", long)]
     /// Avoid any write operations on the Parameter Store.
+    ///
+    /// This is helpful when you want to know which parameters will be
+    /// affected by a given operation.  Read-only access to AWS SSM is
+    /// still performed.
     dry_run: bool,
     #[structopt(short = "d", long)]
     /// Provide extra detailed output.
+    ///
+    /// This might help you pinpoint problems, and will dump various
+    /// intermediate data structures along the way.  Be careful,
+    /// sensitive information might end up in your terminal.
     debug: bool,
     #[structopt(subcommand)]
     cmd: KeezCommand,
