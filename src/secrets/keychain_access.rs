@@ -15,7 +15,7 @@ pub fn get_symmetric_key() -> Result<String, keyring::KeyringError> {
 
     let debug = false; // TODO proper config management
     if debug {
-        println!("{:?}", get_password_result);
+        eprintln!("{:?}", get_password_result);
     }
 
     // Only if the error was "not found" do we know how to recover.

@@ -15,13 +15,13 @@ pub fn run(
     let ps = aws::parameter_store::get_parameters_by_path(source);
 
     if args.debug {
-        println!("Raw output from Parameter Store:");
-        println!("{:?}", ps);
+        eprintln!("Raw output from Parameter Store:");
+        eprintln!("{:?}", ps);
     }
 
     let unwrapped_parameterblob = ps.unwrap();
 
-    println!(
+    eprintln!(
         "Returned {} parameters from store.",
         unwrapped_parameterblob.get_parameters().len()
     );
@@ -29,12 +29,12 @@ pub fn run(
     let yaml_blob = serde_yaml::to_string(&unwrapped_parameterblob).unwrap();
 
     if insecure_output {
-        println!("{}", yaml_blob);
+        eprintln!("{}", yaml_blob);
     }
 
     if args.debug {
         let key = secrets::keychain_access::get_symmetric_key();
-        println!("Found symmetric key = {:?}", key);
+        eprintln!("Found symmetric key = {:?}", key);
     }
 
     let encrypted_form = secrets::symmetric_store::encrypt(yaml_blob).unwrap();
@@ -47,7 +47,7 @@ pub fn run(
         env::current_dir().unwrap().join(path)
     };
 
-    print!(
+    eprint!(
         "Writing exported parameters to {}... ",
         absolute_path.display()
     );
@@ -56,5 +56,5 @@ pub fn run(
     // existing file at the given path.
     fs::write(&absolute_path, &encrypted_form).unwrap();
 
-    println!("done.");
+    eprintln!("done.");
 }

@@ -8,7 +8,7 @@ mod secrets;
 fn main() {
     let args = cli::Keez::from_args();
     if *args.get_debug() {
-        println!("{:?}", args);
+        eprintln!("{:?}", args);
     }
 
     match &*args.get_cmd() {
@@ -43,7 +43,7 @@ fn main() {
             source,
             destination,
         } => {
-            println!("Command not yet implemented.");
+            eprintln!("Command not yet implemented.");
         }
         cli::KeezCommand::Create {} => {
             cli::cmd_create::run(args.clone());

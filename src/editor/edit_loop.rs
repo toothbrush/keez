@@ -32,7 +32,7 @@ pub fn interactive_edit(text: String) -> Result<String, Box<dyn error::Error>> {
     // Write YAML blob to temp file, then edit.
     fs::write(&temp_file, &text).unwrap();
 
-    println!("Opening {} for editing...", temp_file.display());
+    eprintln!("Opening {} for editing...", temp_file.display());
 
     let output = Command::new(editor)
         .arg(path_buf.clone())

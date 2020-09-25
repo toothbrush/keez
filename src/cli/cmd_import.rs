@@ -15,7 +15,7 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
         env::current_dir().unwrap().join(path)
     };
 
-    println!(
+    eprintln!(
         "Reading exported parameters from {}... ",
         absolute_path.display()
     );
@@ -27,8 +27,8 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
     let raw_yaml = secrets::symmetric_store::decrypt(encrypted_blob).unwrap();
 
     if args.debug {
-        println!("Read YAML from encrypted file:");
-        println!("{}", raw_yaml);
+        eprintln!("Read YAML from encrypted file:");
+        eprintln!("{}", raw_yaml);
     }
 
     // Deserialize it back to a Rust type.
@@ -36,16 +36,16 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
         serde_yaml::from_str(&raw_yaml).unwrap();
 
     if args.debug {
-        println!("Data structure after deserialization:");
-        println!("{:?}", deserialized);
+        eprintln!("Data structure after deserialization:");
+        eprintln!("{:?}", deserialized);
     }
 
-    println!("Imported blob contains the following keys:");
+    eprintln!("Imported blob contains the following keys:");
     for (key, _param) in deserialized.get_parameters() {
-        println!("  - {}", key);
+        eprintln!("  - {}", key);
     }
-    println!("\nWe'll rewrite the path prefix:");
-    println!("  {} => {}\n", deserialized.get_path_prefix(), destination);
+    eprintln!("\nWe'll rewrite the path prefix:");
+    eprintln!("  {} => {}\n", deserialized.get_path_prefix(), destination);
 
     let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
     aws::parameter_store::migrate_parameters(deserialized, destination, write_mode).unwrap();

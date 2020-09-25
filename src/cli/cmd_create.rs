@@ -24,8 +24,8 @@ parameters:
     let new_yaml_blob = editor::edit_loop::interactive_edit(example).unwrap();
 
     if args.debug {
-        println!("New YAML blob:");
-        println!("{}", new_yaml_blob);
+        eprintln!("New YAML blob:");
+        eprintln!("{}", new_yaml_blob);
     }
     // TODO re-open editor if something about the new YAML makes it
     // unparsable, or if something goes wrong pushing to AWS API.
@@ -35,13 +35,13 @@ parameters:
         serde_yaml::from_str(&new_yaml_blob).unwrap();
 
     if args.debug {
-        println!("Data structure after deserialization:");
-        println!("{:?}", deserialized);
+        eprintln!("Data structure after deserialization:");
+        eprintln!("{:?}", deserialized);
     }
 
-    println!("Create blob contains the following keys:");
+    eprintln!("Create blob contains the following keys:");
     for (key, _param) in deserialized.get_parameters() {
-        println!("  - {}", key);
+        eprintln!("  - {}", key);
     }
 
     let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
