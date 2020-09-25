@@ -2,6 +2,7 @@ use structopt::StructOpt;
 
 mod aws;
 mod cli;
+mod editor;
 mod secrets;
 
 fn main() {
