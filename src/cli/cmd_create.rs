@@ -44,5 +44,5 @@ parameters:
 
     let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
 
-    aws::parameter_store::create_parameters(deserialized, write_mode).unwrap();
+    aws::parameter_store::push_new_parameters(deserialized, write_mode).unwrap();
 }
