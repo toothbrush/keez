@@ -1,3 +1,4 @@
+use std::env;
 use std::error;
 use std::fmt;
 use std::fs;
@@ -20,10 +21,7 @@ impl fmt::Display for EditError {
 impl error::Error for EditError {}
 
 pub fn interactive_edit(text: String) -> Result<String, Box<dyn error::Error>> {
-    let editor = match find_editor() {
-        Ok(e) => e,
-        Err(err) => return Err(err),
-    };
+    let editor = find_editor();
 
     // Create a temporary file somewhere.  When the variable goes out
     // of scope, the mktemp crate takes care of cleaning it up.
@@ -50,8 +48,9 @@ pub fn interactive_edit(text: String) -> Result<String, Box<dyn error::Error>> {
     Ok(new_text)
 }
 
-fn find_editor() -> Result<String, Box<dyn error::Error>> {
-    // TODO use env::... and $EDITOR, fall back to Vim.  Or something
-    // smarter.
-    Ok("vim".to_string())
+fn find_editor() -> String {
+    env::var("EDITOR").unwrap_or_else(|_x| {
+        eprintln!("$EDITOR not set, defaulting to `vim`.");
+        "vim".to_string()
+    })
 }
