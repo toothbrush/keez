@@ -8,9 +8,11 @@ use crate::cli;
 // /bar/baz/quux.
 pub fn run(args: cli::Keez, source: String, destination: String) {
     let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
-    let parameters = aws::parameter_store::get_parameters_by_path(source.clone()).unwrap();
+    let parameters =
+        aws::parameter_store::get_parameters_by_path(source.clone(), args.debug).unwrap();
 
     let rerooted_parameters =
         aws::parameter_store::reroot_parameters(parameters.clone(), destination.clone()).unwrap();
+
     aws::parameter_store::push_new_parameters(rerooted_parameters, write_mode).unwrap();
 }

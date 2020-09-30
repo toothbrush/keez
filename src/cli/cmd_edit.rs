@@ -3,7 +3,7 @@ use crate::cli;
 use crate::editor;
 
 pub fn run(args: cli::Keez, prefix: String) {
-    let ps = aws::parameter_store::get_parameters_by_path(prefix);
+    let ps = aws::parameter_store::get_parameters_by_path(prefix, args.debug);
 
     if args.debug {
         eprintln!("Raw output from Parameter Store:");

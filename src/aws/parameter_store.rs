@@ -113,8 +113,9 @@ impl ParameterCollection {
 
 pub fn get_parameters_by_path(
     path_prefix: String,
+    debug: bool,
 ) -> Result<ParameterCollection, Box<dyn error::Error>> {
-    let raw_parameters = raw_parameters_by_path(path_prefix.clone())?;
+    let raw_parameters = raw_parameters_by_path(path_prefix.clone(), debug)?;
     let mut result = ParameterCollection::new(path_prefix.clone());
 
     for raw_param in &raw_parameters {
@@ -132,6 +133,7 @@ pub fn get_parameters_by_path(
 
 fn raw_parameters_by_path(
     path_prefix: String,
+    debug: bool,
 ) -> Result<Vec<rusoto_ssm::Parameter>, Box<dyn error::Error>> {
     let mut rt = runtime::Builder::new()
         .threaded_scheduler()
@@ -167,7 +169,6 @@ fn raw_parameters_by_path(
         }
     }
 
-    let debug = true; // TODO filter down from --debug structopt
     if debug {
         eprintln!("raw_parameters_by_path: received from API:");
         eprintln!("{:?}", parameters);

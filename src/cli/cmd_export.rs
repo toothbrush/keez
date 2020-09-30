@@ -12,7 +12,7 @@ pub fn run(
     insecure_output: bool,
     source: String,
 ) {
-    let ps = aws::parameter_store::get_parameters_by_path(source);
+    let ps = aws::parameter_store::get_parameters_by_path(source, args.debug);
 
     if args.debug {
         eprintln!("Raw output from Parameter Store:");
