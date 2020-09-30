@@ -19,3 +19,7 @@ stdenv.mkDerivation {
     zlib
   ];
 }
+
+# I found that after direnv installs Rust with this overlay, i still
+# had to run `rustup install stable`.  I don't know if that makes
+# sense, but there you go.
