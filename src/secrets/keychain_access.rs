@@ -13,11 +13,6 @@ pub fn get_symmetric_key() -> Result<String, keyring::KeyringError> {
     let keyring = Keyring::new(APP_NAME, SYMMETRIC_KEY_ID);
     let get_password_result = keyring.get_password();
 
-    let debug = false; // TODO proper config management
-    if debug {
-        eprintln!("{:?}", get_password_result);
-    }
-
     // Only if the error was "not found" do we know how to recover.
     // Otherwise, bubble up the error.
     match get_password_result {
