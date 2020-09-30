@@ -802,6 +802,7 @@ dependencies = [
  "serde",
  "serde_yaml",
  "structopt",
+ "text_io",
  "tindercrypt",
  "tokio",
 ]
@@ -1866,6 +1867,12 @@ checksum = "6f0fcee7b24a25675de40d5bb4de6e41b0df07bc9856295e7e2b3a3600c400c2"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "text_io"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6cb170b4f47dc48835fbc56259c12d8963e542b05a24be2e3a1f5a6c320fd2d4"
 
 [[package]]
 name = "textwrap"

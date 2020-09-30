@@ -6,6 +6,7 @@ use std::process::Command;
 use std::process::Stdio;
 
 use mktemp::Temp;
+use text_io::read;
 
 use crate::aws;
 
@@ -26,27 +27,38 @@ pub fn interactive_edit_parameters(
     params: aws::parameter_store::ParameterCollection,
     debug: bool,
 ) -> Result<aws::parameter_store::ParameterCollection, Box<dyn error::Error>> {
-    let yaml_blob = serde_yaml::to_string(&params)?;
+    let mut yaml_blob = serde_yaml::to_string(&params)?;
 
-    let new_yaml_blob = interactive_edit(yaml_blob).unwrap();
+    loop {
+        let mut new_yaml_blob = interactive_edit(yaml_blob.clone())?;
 
-    if debug {
-        eprintln!("New YAML blob after edit session:");
-        eprintln!("{}", new_yaml_blob);
+        if debug {
+            eprintln!("New YAML blob after edit session:");
+            eprintln!("{}", new_yaml_blob);
+        }
+
+        // Deserialize it back to a Rust type.
+        match serde_yaml::from_str(&new_yaml_blob) {
+            Ok(pc) => {
+                if debug {
+                    eprintln!("Data structure after deserialization:");
+                    eprintln!("{:?}", pc);
+                }
+                return Ok(pc);
+            }
+            Err(whatever) => {
+                eprintln!("Uh oh, there was a problem parsing the YAML you provided.");
+                eprintln!("If you like, we'll provide another opportunity to continue editing, and maybe fix up the mistake.");
+                eprintln!("The error was: {}", whatever);
+                eprintln!("Press enter to edit again, or C-c to exit...");
+                // reads until a \n is encountered
+                let _line: String = read!("{}\n");
+            }
+        };
+        // okay, next time around we want to present the user with the
+        // thing that didn't parse.
+        yaml_blob = new_yaml_blob.clone();
     }
-    // TODO re-open editor if something about the new YAML makes it
-    // unparsable, or if something goes wrong pushing to AWS API.
-
-    // Deserialize it back to a Rust type.
-    let deserialized: aws::parameter_store::ParameterCollection =
-        serde_yaml::from_str(&new_yaml_blob)?;
-
-    if debug {
-        eprintln!("Data structure after deserialization:");
-        eprintln!("{:?}", deserialized);
-    }
-
-    Ok(deserialized)
 }
 
 pub fn interactive_edit(text: String) -> Result<String, Box<dyn error::Error>> {
