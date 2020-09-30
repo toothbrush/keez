@@ -7,6 +7,8 @@ use std::process::Stdio;
 
 use mktemp::Temp;
 
+use crate::aws;
+
 #[derive(Debug)]
 enum EditError {
     EditorCommandError,
@@ -19,6 +21,33 @@ impl fmt::Display for EditError {
     }
 }
 impl error::Error for EditError {}
+
+pub fn interactive_edit_parameters(
+    params: aws::parameter_store::ParameterCollection,
+    debug: bool,
+) -> Result<aws::parameter_store::ParameterCollection, Box<dyn error::Error>> {
+    let yaml_blob = serde_yaml::to_string(&params)?;
+
+    let new_yaml_blob = interactive_edit(yaml_blob).unwrap();
+
+    if debug {
+        eprintln!("New YAML blob after edit session:");
+        eprintln!("{}", new_yaml_blob);
+    }
+    // TODO re-open editor if something about the new YAML makes it
+    // unparsable, or if something goes wrong pushing to AWS API.
+
+    // Deserialize it back to a Rust type.
+    let deserialized: aws::parameter_store::ParameterCollection =
+        serde_yaml::from_str(&new_yaml_blob)?;
+
+    if debug {
+        eprintln!("Data structure after deserialization:");
+        eprintln!("{:?}", deserialized);
+    }
+
+    Ok(deserialized)
+}
 
 pub fn interactive_edit(text: String) -> Result<String, Box<dyn error::Error>> {
     let editor = find_editor();

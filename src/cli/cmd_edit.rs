@@ -10,44 +10,24 @@ pub fn run(args: cli::Keez, prefix: String) {
         eprintln!("{:?}", ps);
     }
 
-    let unwrapped_parameterblob = ps.unwrap();
+    let original_parameters = ps.unwrap();
 
     eprintln!(
         "Returned {} parameters from store.",
-        unwrapped_parameterblob.get_parameters().len()
+        original_parameters.get_parameters().len()
     );
 
-    let yaml_blob = serde_yaml::to_string(&unwrapped_parameterblob).unwrap();
-
-    let new_yaml_blob = editor::edit_loop::interactive_edit(yaml_blob).unwrap();
-
-    if args.debug {
-        eprintln!("New YAML blob:");
-        eprintln!("{}", new_yaml_blob);
-    }
-    // TODO re-open editor if something about the new YAML makes it
-    // unparsable, or if something goes wrong pushing to AWS API.
-
-    // Deserialize it back to a Rust type.
-    let deserialized: aws::parameter_store::ParameterCollection =
-        serde_yaml::from_str(&new_yaml_blob).unwrap();
-
-    if args.debug {
-        eprintln!("Data structure after deserialization:");
-        eprintln!("{:?}", deserialized);
-    }
+    let after_edit =
+        editor::edit_loop::interactive_edit_parameters(original_parameters.clone(), args.debug)
+            .unwrap();
 
     eprintln!("Edited blob contains the following keys:");
-    for (key, _param) in deserialized.get_parameters() {
+    for (key, _param) in after_edit.get_parameters() {
         eprintln!("  - {}", key);
     }
 
     let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
 
-    aws::parameter_store::push_updated_parameters(
-        unwrapped_parameterblob,
-        deserialized,
-        write_mode,
-    )
-    .unwrap();
+    aws::parameter_store::push_updated_parameters(original_parameters, after_edit, write_mode)
+        .unwrap();
 }
