@@ -8,6 +8,8 @@ use rusoto_ssm::{GetParametersByPathRequest, PutParameterRequest, Ssm, SsmClient
 use serde::{Deserialize, Serialize};
 use tokio::runtime;
 
+use crate::flags::operation_mode::OperationMode;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Parameter {
     #[serde(rename = "value")]
@@ -237,7 +239,7 @@ pub fn reroot_parameters(
 
 pub fn push_new_parameters(
     parameters: ParameterCollection,
-    write_mode: bool,
+    operation_mode: OperationMode,
 ) -> Result<(), Box<dyn error::Error>> {
     let mut rt = runtime::Builder::new()
         .threaded_scheduler()
@@ -249,7 +251,7 @@ pub fn push_new_parameters(
     let mut req: PutParameterRequest;
 
     for (key, param) in parameters.get_parameters() {
-        if write_mode {
+        if operation_mode == OperationMode::ReadWrite {
             eprintln!("Creating key {}...", key);
             req = PutParameterRequest {
                 data_type: Some("text".to_string()),
@@ -278,7 +280,7 @@ pub fn push_new_parameters(
 pub fn push_updated_parameters(
     old_parameters: ParameterCollection,
     new_parameters: ParameterCollection,
-    write_mode: bool,
+    operation_mode: OperationMode,
 ) -> Result<(), Box<dyn error::Error>> {
     let mut updated_parameters: HashMap<String, Parameter> = HashMap::new();
 
@@ -313,7 +315,7 @@ pub fn push_updated_parameters(
     let mut req: PutParameterRequest;
 
     for (key, param) in updated_parameters {
-        if write_mode {
+        if operation_mode == OperationMode::ReadWrite {
             eprintln!("Updating key {}...", key);
             req = PutParameterRequest {
                 data_type: Some("text".to_string()),
