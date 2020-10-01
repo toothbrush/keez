@@ -122,7 +122,7 @@ pub fn get_parameters_by_path(
 
     for raw_param in &raw_parameters {
         result.parameters.insert(
-            raw_param.name.clone().unwrap(), // TODO clone or borrow??
+            raw_param.name.clone().unwrap(),
             Parameter::new(
                 raw_param.value.clone().unwrap_or_default(),
                 raw_param.type_.clone().unwrap_or_default(),

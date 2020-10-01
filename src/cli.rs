@@ -32,10 +32,6 @@ pub struct Keez {
 }
 
 impl Keez {
-    // useful for setting defaults? TODO?
-    // pub fn new() -> Foo { Foo { x: 0 } }
-
-    // We create the getter function here:
     pub fn debug(&self) -> &bool {
         &self.debug
     }
