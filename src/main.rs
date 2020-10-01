@@ -40,7 +40,7 @@ fn main() {
             );
         }
         cli::KeezCommand::Edit { prefix } => {
-            cli::cmd_edit::run(args.clone(), prefix.clone());
+            cli::cmd_edit::run(args.clone(), prefix.clone(), args.operation_mode().clone());
         }
         cli::KeezCommand::Copy {
             source,

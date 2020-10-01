@@ -1,8 +1,11 @@
 use crate::aws;
 use crate::cli;
 use crate::editor;
+use crate::flags;
 
-pub fn run(args: cli::Keez, prefix: String) {
+use flags::operation_mode::OperationMode;
+
+pub fn run(args: cli::Keez, prefix: String, operation_mode: OperationMode) {
     let ps = aws::parameter_store::get_parameters_by_path(prefix, args.debug);
 
     if args.debug {
@@ -26,8 +29,6 @@ pub fn run(args: cli::Keez, prefix: String) {
         eprintln!("  - {}", key);
     }
 
-    let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
-
-    aws::parameter_store::push_updated_parameters(original_parameters, after_edit, write_mode)
+    aws::parameter_store::push_updated_parameters(original_parameters, after_edit, operation_mode)
         .unwrap();
 }
