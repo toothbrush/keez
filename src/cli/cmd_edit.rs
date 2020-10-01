@@ -24,6 +24,11 @@ pub fn run(args: cli::Keez, prefix: String, operation_mode: OperationMode) {
         editor::edit_loop::interactive_edit_parameters(original_parameters.clone(), args.debug)
             .unwrap();
 
+    if after_edit == original_parameters {
+        eprintln!("You don't appear to have modified anything, so we'll quit now.");
+        return;
+    }
+
     eprintln!("Edited blob contains the following keys:");
     for (key, _param) in after_edit.parameters() {
         eprintln!("  - {}", key);

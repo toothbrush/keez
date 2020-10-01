@@ -25,7 +25,12 @@ parameters:
         serde_yaml::from_str(&example).unwrap();
 
     let new_parameter_blob =
-        editor::edit_loop::interactive_edit_parameters(deserialized, args.debug).unwrap();
+        editor::edit_loop::interactive_edit_parameters(deserialized.clone(), args.debug).unwrap();
+
+    if new_parameter_blob == deserialized {
+        eprintln!("You don't appear to have modified anything, so we'll quit now.");
+        return;
+    }
 
     if args.debug {
         eprintln!("New parameter blob:");
