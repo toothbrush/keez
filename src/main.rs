@@ -22,6 +22,7 @@ fn main() {
                 export_filename.clone(),
                 insecure_output.clone(),
                 source.clone(),
+                args.operation_mode().clone(),
             );
         }
         cli::KeezCommand::Import {

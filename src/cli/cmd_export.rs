@@ -6,11 +6,14 @@ use crate::aws;
 use crate::cli;
 use crate::secrets;
 
+use cli::OperationMode;
+
 pub fn run(
     args: cli::Keez,
     export_filename: std::path::PathBuf,
     insecure_output: bool,
     source: String,
+    operation_mode: OperationMode,
 ) {
     let ps = aws::parameter_store::get_parameters_by_path(source, args.debug);
 
@@ -47,14 +50,21 @@ pub fn run(
         env::current_dir().unwrap().join(path)
     };
 
-    eprint!(
-        "Writing exported parameters to {}... ",
-        absolute_path.display()
-    );
+    if operation_mode == OperationMode::ReadWrite {
+        eprint!(
+            "Writing exported parameters to {}... ",
+            absolute_path.display()
+        );
 
-    // Open file and create if necessary.  We'll overwrite any
-    // existing file at the given path.
-    fs::write(&absolute_path, &encrypted_form).unwrap();
+        // Open file and create if necessary.  We'll overwrite any
+        // existing file at the given path.
+        fs::write(&absolute_path, &encrypted_form).unwrap();
 
-    eprintln!("done.");
+        eprintln!("done.");
+    } else if operation_mode == OperationMode::ReadOnly {
+        eprintln!(
+            "[DRY-RUN] Would write exported parameters to {}... ",
+            absolute_path.display()
+        );
+    }
 }
