@@ -36,6 +36,7 @@ fn main() {
                 import_filename.clone(),
                 destination.clone(),
                 edit.clone(),
+                args.operation_mode().clone(),
             );
         }
         cli::KeezCommand::Edit { prefix } => {

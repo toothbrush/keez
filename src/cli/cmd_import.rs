@@ -5,9 +5,18 @@ use std::path::Path;
 use crate::aws;
 use crate::cli;
 use crate::editor;
+use crate::flags;
 use crate::secrets;
 
-pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: String, edit: bool) {
+use flags::operation_mode::OperationMode;
+
+pub fn run(
+    args: cli::Keez,
+    import_filename: std::path::PathBuf,
+    destination: String,
+    edit: bool,
+    operation_mode: OperationMode,
+) {
     // Create a path to the desired file
     let path = Path::new(&import_filename);
     let absolute_path = if path.is_absolute() {
@@ -55,6 +64,5 @@ pub fn run(args: cli::Keez, import_filename: std::path::PathBuf, destination: St
             editor::edit_loop::interactive_edit_parameters(rerooted.clone(), args.debug).unwrap();
     }
 
-    let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
-    aws::parameter_store::push_new_parameters(rerooted, write_mode).unwrap();
+    aws::parameter_store::push_new_parameters(rerooted, operation_mode).unwrap();
 }
