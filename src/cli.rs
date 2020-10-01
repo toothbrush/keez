@@ -36,11 +36,11 @@ impl Keez {
     // pub fn new() -> Foo { Foo { x: 0 } }
 
     // We create the getter function here:
-    pub fn get_debug(&self) -> &bool {
+    pub fn debug(&self) -> &bool {
         &self.debug
     }
 
-    pub fn get_cmd(&self) -> &KeezCommand {
+    pub fn cmd(&self) -> &KeezCommand {
         &self.cmd
     }
 

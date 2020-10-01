@@ -8,11 +8,11 @@ mod secrets;
 
 fn main() {
     let args = cli::Keez::from_args();
-    if *args.get_debug() {
+    if *args.debug() {
         eprintln!("{:?}", args);
     }
 
-    match &*args.get_cmd() {
+    match &*args.cmd() {
         cli::KeezCommand::Export {
             export_filename,
             insecure_output,
