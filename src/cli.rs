@@ -185,6 +185,6 @@ pub enum KeezCommand {
         import_filename: PathBuf,
         #[structopt(short, long)]
         /// Whether to interactively edit values prior to importing.
-        edit: bool, // TODO implement interactive edit pre-upload.
+        edit: bool,
     },
 }
