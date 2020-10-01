@@ -10,7 +10,7 @@ use tokio::runtime;
 
 use crate::flags::operation_mode::OperationMode;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct Parameter {
     #[serde(rename = "value")]
     parameter_value: String,
@@ -80,7 +80,7 @@ impl FromStr for ParameterType {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct ParameterCollection {
     #[serde(default, skip_serializing_if = "String::is_empty")]
     prefix: String,
