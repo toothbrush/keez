@@ -30,7 +30,7 @@ pub fn interactive_edit_parameters(
     let mut yaml_blob = serde_yaml::to_string(&params)?;
 
     loop {
-        let mut new_yaml_blob = interactive_edit(yaml_blob.clone())?;
+        let new_yaml_blob = interactive_edit(yaml_blob.clone())?;
 
         if debug {
             eprintln!("New YAML blob after edit session:");
