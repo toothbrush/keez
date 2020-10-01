@@ -50,7 +50,7 @@ pub fn run(
         eprintln!("  - {}", key);
     }
     eprintln!("\nWe'll rewrite the path prefix:");
-    eprintln!("  {} => {}\n", deserialized.get_path_prefix(), destination);
+    eprintln!("  {} => {}\n", deserialized.prefix(), destination);
 
     if args.debug {
         eprintln!("Data structure after deserialization:");

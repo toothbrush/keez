@@ -108,7 +108,7 @@ impl ParameterCollection {
         &self.parameters
     }
 
-    pub fn get_path_prefix(&self) -> &String {
+    pub fn prefix(&self) -> &String {
         &self.prefix
     }
 }
@@ -217,7 +217,7 @@ pub fn reroot_parameters(
         new_key_parts.push(destination.clone());
         new_key_parts.push(
             key.clone()
-                .strip_prefix(source.get_path_prefix())
+                .strip_prefix(source.prefix())
                 .unwrap()
                 .to_string(),
         );
