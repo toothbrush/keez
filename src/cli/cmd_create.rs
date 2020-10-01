@@ -21,29 +21,21 @@ parameters:
     type: SecureString
 ",
     );
-
-    let new_yaml_blob = editor::edit_loop::interactive_edit(example).unwrap();
-
-    if args.debug {
-        eprintln!("New YAML blob:");
-        eprintln!("{}", new_yaml_blob);
-    }
-    // TODO re-open editor if something about the new YAML makes it
-    // unparsable, or if something goes wrong pushing to AWS API.
-
-    // Deserialize it back to a Rust type.
     let deserialized: aws::parameter_store::ParameterCollection =
-        serde_yaml::from_str(&new_yaml_blob).unwrap();
+        serde_yaml::from_str(&example).unwrap();
+
+    let new_parameter_blob =
+        editor::edit_loop::interactive_edit_parameters(deserialized, args.debug).unwrap();
 
     if args.debug {
-        eprintln!("Data structure after deserialization:");
-        eprintln!("{:?}", deserialized);
+        eprintln!("New parameter blob:");
+        eprintln!("{:?}", new_parameter_blob);
     }
 
     eprintln!("Create blob contains the following keys:");
-    for (key, _param) in deserialized.get_parameters() {
+    for (key, _param) in new_parameter_blob.get_parameters() {
         eprintln!("  - {}", key);
     }
 
-    aws::parameter_store::push_new_parameters(deserialized, operation_mode).unwrap();
+    aws::parameter_store::push_new_parameters(new_parameter_blob, operation_mode).unwrap();
 }
