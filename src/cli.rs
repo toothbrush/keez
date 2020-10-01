@@ -73,6 +73,9 @@ pub enum KeezCommand {
         source: String,
         /// The path where you would like to copy parameters to.
         destination: String,
+        #[structopt(short, long)]
+        /// Whether to interactively edit values prior to importing.
+        edit: bool,
     },
     /// Interactively create parameters in bulk
     ///

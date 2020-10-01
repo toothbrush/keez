@@ -42,8 +42,14 @@ fn main() {
         cli::KeezCommand::Copy {
             source,
             destination,
+            edit,
         } => {
-            cli::cmd_copy::run(args.clone(), source.clone(), destination.clone());
+            cli::cmd_copy::run(
+                args.clone(),
+                source.clone(),
+                destination.clone(),
+                edit.clone(),
+            );
         }
         cli::KeezCommand::Create {} => {
             cli::cmd_create::run(args.clone());
