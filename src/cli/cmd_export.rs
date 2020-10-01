@@ -4,9 +4,10 @@ use std::path::Path;
 
 use crate::aws;
 use crate::cli;
+use crate::flags;
 use crate::secrets;
 
-use cli::OperationMode;
+use flags::operation_mode::OperationMode;
 
 pub fn run(
     args: cli::Keez,

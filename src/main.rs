@@ -3,6 +3,7 @@ use structopt::StructOpt;
 mod aws;
 mod cli;
 mod editor;
+mod flags;
 mod secrets;
 
 fn main() {

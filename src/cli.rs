@@ -3,12 +3,11 @@ pub mod cmd_create;
 pub mod cmd_edit;
 pub mod cmd_export;
 pub mod cmd_import;
-mod operation_mode;
 
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-use operation_mode::OperationMode;
+use crate::flags::operation_mode::OperationMode;
 
 #[derive(Clone, Debug, StructOpt)]
 /// simple & interactive manipulation of AWS SSM Parameter Store values
