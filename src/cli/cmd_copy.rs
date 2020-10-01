@@ -1,14 +1,22 @@
 use crate::aws;
 use crate::cli;
 use crate::editor;
+use crate::flags;
+
+use flags::operation_mode::OperationMode;
 
 // The `copy` command takes a source and target prefix (e.g., /foo and
 // /bar) and copies all values under /foo to values at the same
 // hierarchy under /bar.  It replaces the initial `/foo' component
 // with /bar.  This also works if the target is deep, such as
 // /bar/baz/quux.
-pub fn run(args: cli::Keez, source: String, destination: String, edit: bool) {
-    let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
+pub fn run(
+    args: cli::Keez,
+    source: String,
+    destination: String,
+    edit: bool,
+    operation_mode: OperationMode,
+) {
     let parameters =
         aws::parameter_store::get_parameters_by_path(source.clone(), args.debug).unwrap();
 
@@ -21,5 +29,5 @@ pub fn run(args: cli::Keez, source: String, destination: String, edit: bool) {
                 .unwrap();
     }
 
-    aws::parameter_store::push_new_parameters(rerooted_parameters, write_mode).unwrap();
+    aws::parameter_store::push_new_parameters(rerooted_parameters, operation_mode).unwrap();
 }

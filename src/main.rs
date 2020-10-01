@@ -52,6 +52,7 @@ fn main() {
                 source.clone(),
                 destination.clone(),
                 edit.clone(),
+                args.operation_mode().clone(),
             );
         }
         cli::KeezCommand::Create {} => {
