@@ -33,7 +33,7 @@ parameters:
     }
 
     eprintln!("Create blob contains the following keys:");
-    for (key, _param) in new_parameter_blob.get_parameters() {
+    for (key, _param) in new_parameter_blob.parameters() {
         eprintln!("  - {}", key);
     }
 

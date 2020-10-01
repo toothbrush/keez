@@ -46,7 +46,7 @@ pub fn run(
         serde_yaml::from_str(&raw_yaml).unwrap();
 
     eprintln!("Imported blob contains the following keys:");
-    for (key, _param) in deserialized.get_parameters() {
+    for (key, _param) in deserialized.parameters() {
         eprintln!("  - {}", key);
     }
     eprintln!("\nWe'll rewrite the path prefix:");

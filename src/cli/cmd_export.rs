@@ -27,7 +27,7 @@ pub fn run(
 
     eprintln!(
         "Returned {} parameters from store.",
-        unwrapped_parameterblob.get_parameters().len()
+        unwrapped_parameterblob.parameters().len()
     );
 
     let yaml_blob = serde_yaml::to_string(&unwrapped_parameterblob).unwrap();

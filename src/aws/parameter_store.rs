@@ -104,7 +104,7 @@ impl ParameterCollection {
         };
     }
 
-    pub fn get_parameters(&self) -> &HashMap<String, Parameter> {
+    pub fn parameters(&self) -> &HashMap<String, Parameter> {
         &self.parameters
     }
 
@@ -210,7 +210,7 @@ pub fn reroot_parameters(
     let mut new_params: HashMap<String, Parameter> = HashMap::new();
     let mut new_key: String;
 
-    for (key, param) in source.get_parameters() {
+    for (key, param) in source.parameters() {
         // It's okay to panic here, because things are weird if the
         // search prefix doesn't match all the keys in a blob.
         let mut new_key_parts = Vec::new();
@@ -250,7 +250,7 @@ pub fn push_new_parameters(
 
     let mut req: PutParameterRequest;
 
-    for (key, param) in parameters.get_parameters() {
+    for (key, param) in parameters.parameters() {
         if operation_mode == OperationMode::ReadWrite {
             eprintln!("Creating key {}...", key);
             req = PutParameterRequest {
@@ -284,8 +284,8 @@ pub fn push_updated_parameters(
 ) -> Result<(), Box<dyn error::Error>> {
     let mut updated_parameters: HashMap<String, Parameter> = HashMap::new();
 
-    for (key, new_param) in new_parameters.get_parameters() {
-        match old_parameters.get_parameters().get(key) {
+    for (key, new_param) in new_parameters.parameters() {
+        match old_parameters.parameters().get(key) {
             Some(old_param) => {
                 // alright, the key exists in the old hashmap
                 if old_param.parameter_type != new_param.parameter_type

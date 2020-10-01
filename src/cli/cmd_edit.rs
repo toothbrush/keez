@@ -17,7 +17,7 @@ pub fn run(args: cli::Keez, prefix: String, operation_mode: OperationMode) {
 
     eprintln!(
         "Returned {} parameters from store.",
-        original_parameters.get_parameters().len()
+        original_parameters.parameters().len()
     );
 
     let after_edit =
@@ -25,7 +25,7 @@ pub fn run(args: cli::Keez, prefix: String, operation_mode: OperationMode) {
             .unwrap();
 
     eprintln!("Edited blob contains the following keys:");
-    for (key, _param) in after_edit.get_parameters() {
+    for (key, _param) in after_edit.parameters() {
         eprintln!("  - {}", key);
     }
 
