@@ -82,7 +82,7 @@ impl FromStr for ParameterType {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ParameterCollection {
-    #[serde(default)]
+    #[serde(default, skip_serializing_if = "String::is_empty")]
     prefix: String,
     parameters: HashMap<String, Parameter>,
 }
