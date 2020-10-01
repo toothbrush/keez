@@ -56,7 +56,7 @@ fn main() {
             );
         }
         cli::KeezCommand::Create {} => {
-            cli::cmd_create::run(args.clone());
+            cli::cmd_create::run(args.clone(), args.operation_mode().clone());
         }
     }
 }

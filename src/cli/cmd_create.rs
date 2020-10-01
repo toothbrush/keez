@@ -1,8 +1,11 @@
 use crate::aws;
 use crate::cli;
 use crate::editor;
+use crate::flags;
 
-pub fn run(args: cli::Keez) {
+use flags::operation_mode::OperationMode;
+
+pub fn run(args: cli::Keez, operation_mode: OperationMode) {
     // Create an example blob of YAML for the user to ape:
     let example = String::from(
         "---
@@ -42,7 +45,5 @@ parameters:
         eprintln!("  - {}", key);
     }
 
-    let write_mode = !args.dry_run; // TODO proper enum OperationMode with READ_ONLY vs READ_WRITE
-
-    aws::parameter_store::push_new_parameters(deserialized, write_mode).unwrap();
+    aws::parameter_store::push_new_parameters(deserialized, operation_mode).unwrap();
 }
